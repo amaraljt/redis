@@ -1,14 +1,24 @@
 // server.cpp : Create a TCP Server
 
+#include <cstring>
 #include <iostream>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <errno.h>
+
+static void die(const char *msg){
+  int err = errno;
+  fprintf(stderr, "[%d] %s\n", err, msg);
+  abort();
+}
 
 static void do_something(int connfd) {
   char rbuf[64] = {};
   ssize_t n = read(connfd, rbuf, sizeof(rbuf) - 1);
   if(n < 0) {
-    msg("read() error");
+    perror("read() error");
     return;
   }
 
@@ -35,6 +45,7 @@ int main(){
   if(rv) {
     die("bind()");
   }  
+
 
   // 4. Listen
   rv = listen(fd, SOMAXCONN); // (fd, max # of connections)
