@@ -1,17 +1,26 @@
 // client.cpp : Client Connection
 
+#include <unistd.h>
 #include <iostream>
 #include <sys/socket.h>
+#include <arpa/inet.h>
+#include <string.h>
+
+static void die(const char *msg){
+  int err = errno;
+  fprintf(stderr, "[%d] %s\n", err, msg);
+  abort();
+}
 
 int main() {
-  int fd = socket(AF_INIT, SOCK_STREAM, 0); // client socket
+  int fd = socket(AF_INET, SOCK_STREAM, 0); // client socket
   if(fd < 0){
     die("socket()");
   }
 
   // Define client connection
   struct sockaddr_in addr = {};
-  addr.sin_family = AF_INIT;
+  addr.sin_family = AF_INET;
   addr.sin_port = ntohs(1234);
   addr.sin_addr.s_addr = ntohl(INADDR_LOOPBACK);
   int rv = connect(fd, (const struct sockaddr *) &addr, sizeof(addr));
